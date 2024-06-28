@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zrh.mapper.CourseMapper">
+
+    <resultMap id="BaseResultMap" type="com.zrh.entity.Course">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="credits" column="credits" jdbcType="DECIMAL"/>
+        <result property="score" column="score" jdbcType="INTEGER"/>
+        <result property="number" column="number" jdbcType="INTEGER"/>
+        <result property="year" column="year" jdbcType="INTEGER"/>
+        <result property="term" column="term" jdbcType="TINYINT"/>
+        <result property="type" column="type" jdbcType="TINYINT"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="profession" column="profession" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="BaseUserMap" type="com.zrh.entity.Course">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="credits" property="credits" jdbcType="DECIMAL"/>
+        <result column="number" property="number" jdbcType="INTEGER"/>
+        <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="term" property="term" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="profession" property="profession" jdbcType="VARCHAR"/>
+        <result column="start" property="start" jdbcType="INTEGER"/>
+        <result column="end" property="end" jdbcType="INTEGER"/>
+        <result column="room" property="room" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,name,credits,
+        score,number,year,
+        term,type,profession,
+        create_time
+    </sql>
+    <select id="getCourseList" resultMap="BaseUserMap">
+        SELECT
+        a.*,
+        c.real_name,
+        d.start,
+        d.end,
+        d.room
+        FROM course a
+        left join teacher_course b
+        on a.id = b.course_id and b.is_del = 0
+        left join teacher c
+        on b.teacher_id = c.id and c.is_del = 0
+        left join course_info d
+        on a.id = d.course_id and d.is_del = 0
+        where a.is_del = 0
+        <if test="courseParam.profession != null and courseParam.profession != ''">
+            and a.profession = #{courseParam.profession}
+        </if>
+        <if test="courseParam.term != null and courseParam.term != ''">
+            AND a.term = #{courseParam.term}
+        </if>
+        <if test="courseParam.courseName != null and courseParam.courseName != ''">
+            AND a.name = #{courseParam.courseName}
+        </if>
+        <if test="courseParam.grade != null and courseParam.grade != ''">
+            AND b.grade = #{courseParam.grade}
+        </if>
+    </select>
+</mapper>

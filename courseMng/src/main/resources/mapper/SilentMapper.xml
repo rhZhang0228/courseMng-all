@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zrh.mapper.SilentMapper">
+
+    <resultMap id="BaseResultMap" type="com.zrh.entity.Silent">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="TINYINT"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,state,is_del
+    </sql>
+</mapper>

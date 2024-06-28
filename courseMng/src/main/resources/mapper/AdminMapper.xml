@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zrh.mapper.AdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.zrh.entity.Admin">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="TINYINT"/>
+        <result property="school" column="school" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="TINYINT"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="BaseUserMap" type="com.zrh.entity.Course">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="credits" property="credits" jdbcType="DECIMAL"/>
+        <result column="number" property="number" jdbcType="INTEGER"/>
+        <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="term" property="term" jdbcType="INTEGER"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="profession" property="profession" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="profession" property="profession" jdbcType="VARCHAR"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="no" property="no" jdbcType="VARCHAR"/>
+        <result column="student_id" property="studentId" jdbcType="VARCHAR"/>
+        <result column="pointByUser" property="pointByUser" jdbcType="VARCHAR"/>
+        <result column="creditsByUser" property="creditsByUser" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result column="scoreByUser" property="scoreByUser" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,username,password,
+        real_name,level,school,
+        email,phone,sex,
+        create_time
+    </sql>
+
+    <select id="getExportList" resultMap="BaseUserMap">
+        select
+        a.id as no,
+        a.real_name,
+        a.admission_time as year,
+        a.grade,
+        a.profession,
+        b.name,
+        b.credits,
+        b.score,
+        b.number,
+        b.term,
+        b.type,
+        b.is_del,
+        b.version,
+        c.point as pointByUser,
+        c.credits as creditsByUser,
+        c.score as scoreByUser
+        FROM
+        student a
+        Left join course b
+        on a.profession = b.profession and b.is_del = 0
+        left join student_course c
+        on a.id = c.student_id and b.id = c.course_id and c.is_del = 0
+        where a.is_del = 0
+        <if test="scoreLevelNumDto.profession != null and scoreLevelNumDto.profession != ''">
+            and a.profession = #{scoreLevelNumDto.profession}
+        </if>
+        <if test="scoreLevelNumDto.grade != null and scoreLevelNumDto.grade != ''">
+            AND a.grade = #{scoreLevelNumDto.grade}
+        </if>
+        <if test="scoreLevelNumDto.courseName != null and scoreLevelNumDto.courseName != ''">
+            AND b.name = #{scoreLevelNumDto.courseName}
+        </if>
+        order by a.id
+    </select>
+
+    <select id="getCourseList" resultMap="BaseUserMap">
+        select
+        a.id as no,
+        a.real_name,
+        a.admission_time as year,
+        a.grade,
+        a.profession,
+        b.id,
+        b.name,
+        b.credits,
+        b.score,
+        b.number,
+        b.term,
+        b.type,
+        b.is_del,
+        b.version,
+        c.point as pointByUser,
+        c.credits as creditsByUser,
+        c.score as scoreByUser
+        FROM
+        student a
+        Left join course b
+        on a.profession = b.profession and b.is_del = 0
+        left join student_course c
+        on a.id = c.student_id and b.id = c.course_id and c.is_del = 0
+        where a.is_del = 0
+        <if test="courseListQueryParam.profession != null and courseListQueryParam.profession != ''">
+            AND a.profession = #{courseListQueryParam.profession}
+        </if>
+        <if test="courseListQueryParam.grade != null and courseListQueryParam.grade != ''">
+            AND a.grade = #{courseListQueryParam.grade}
+        </if>
+        <if test="courseListQueryParam.courseName != null and courseListQueryParam.courseName != ''">
+            AND b.name = #{courseListQueryParam.courseName}
+        </if>
+        order by a.id
+    </select>
+</mapper>

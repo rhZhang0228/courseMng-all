@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zrh.mapper.TeacherMapper">
+
+    <resultMap id="BaseResultMap" type="com.zrh.entity.Teacher">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="TINYINT"/>
+        <result property="school" column="school" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="TINYINT"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="BaseUserMap" type="com.zrh.entity.Course">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="credits" property="credits" jdbcType="DECIMAL"/>
+        <result column="number" property="number" jdbcType="INTEGER"/>
+        <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="year" property="year" jdbcType="INTEGER"/>
+        <result column="term" property="term" jdbcType="INTEGER"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="profession" property="profession" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="profession" property="profession" jdbcType="VARCHAR"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="no" property="no" jdbcType="VARCHAR"/>
+        <result column="student_id" property="studentId" jdbcType="VARCHAR"/>
+        <result column="pointByUser" property="pointByUser" jdbcType="VARCHAR"/>
+        <result column="creditsByUser" property="creditsByUser" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result column="scoreByUser" property="scoreByUser" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,username,password,
+        real_name,level,school,
+        email,phone,sex,
+        create_time
+    </sql>
+
+    <select id="getExportList" resultMap="BaseUserMap">
+        SELECT
+        b.*,
+        c.real_name,
+        c.id as no,
+        c.grade,
+        c.username as student_name,
+        d.point as pointByUser,
+        d.credits as creditsByUser,
+        d.score as scoreByUser
+        FROM teacher_course a
+        LEFT JOIN course b
+        ON a.course_id = b.id and b.is_del = 0
+        LEFT JOIN student c
+        ON a.profession = c.profession and a.grade = c.grade and c.is_del = 0
+        LEFT JOIN student_course d
+        ON c.id = d.student_id and a.course_id = d.course_id and d.is_del = 0
+        where a.is_del = 0
+        <if test="scoreLevelNumDto.profession != null and scoreLevelNumDto.profession != ''">
+            and a.profession = #{scoreLevelNumDto.profession}
+        </if>
+        <if test="scoreLevelNumDto.grade != null and scoreLevelNumDto.grade != ''">
+            AND a.grade = #{scoreLevelNumDto.grade}
+        </if>
+        <if test="scoreLevelNumDto.username != null and scoreLevelNumDto.username != ''">
+            AND a.teacher_id = #{scoreLevelNumDto.username}
+        </if>
+        <if test="scoreLevelNumDto.courseName != null and scoreLevelNumDto.courseName != ''">
+            AND a.name = #{scoreLevelNumDto.courseName}
+        </if>
+        <if test="scoreLevelNumDto.studentName != null and scoreLevelNumDto.studentName != ''">
+            AND d.student_id = #{scoreLevelNumDto.studentName}
+        </if>
+        ORDER BY c.id
+    </select>
+
+    <select id="getTeacherList" resultType="com.zrh.entity.Teacher">
+        SELECT distinct
+        a.id, a.username, a.password, a.real_name, a.level, a.school, a.email, a.phone, a.sex, a.create_time, a.is_del
+        FROM
+        teacher a
+        LEFT JOIN
+        teacher_course b
+        ON a.username = b.username and b.is_del = 0
+        where
+        a.is_del = 0
+        <if test="code != null and code != ''">
+            and a.username LIKE CONCAT('%',#{code},'%') OR a.real_name LIKE CONCAT('%',#{code},'%')
+        </if>
+        <if test="profession != null and profession != ''">
+            AND b.profession = #{profession}
+        </if>
+        <if test="grade != null and grade != ''">
+            AND b.grade = #{grade}
+        </if>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="getCourseList" resultMap="BaseUserMap">
+        SELECT
+        b.*,
+        c.real_name,
+        c.id as no,
+        c.grade,
+        c.username as student_name,
+        d.point as pointByUser,
+        d.credits as creditsByUser,
+        d.score as scoreByUser
+        FROM teacher_course a
+        LEFT JOIN course b
+        ON a.course_id = b.id and b.is_del = 0
+        LEFT JOIN student c
+        ON a.profession = c.profession and a.grade = c.grade and c.is_del = 0
+        LEFT JOIN student_course d
+        ON c.id = d.student_id and a.name = d.name and d.is_del = 0
+        where
+        a.is_del = 0
+        <if test="courseListQueryParam.profession != null and courseListQueryParam.profession != ''">
+            and a.profession = #{courseListQueryParam.profession}
+        </if>
+        <if test="courseListQueryParam.grade != null and courseListQueryParam.grade != ''">
+            AND a.grade = #{courseListQueryParam.grade}
+        </if>
+        <if test="courseListQueryParam.username != null and courseListQueryParam.username != ''">
+            AND a.teacher_id = #{courseListQueryParam.username}
+        </if>
+        <if test="courseListQueryParam.courseName != null and courseListQueryParam.courseName != ''">
+            AND a.name = #{courseListQueryParam.courseName}
+        </if>
+        <if test="courseListQueryParam.studentName != null and courseListQueryParam.studentName != ''">
+            AND d.student_id = #{courseListQueryParam.studentName}
+        </if>
+        ORDER BY c.id
+    </select>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zrh.mapper.CourseInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.zrh.entity.CourseInfo">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="courseId" column="course_id" jdbcType="VARCHAR"/>
+        <result property="start" column="start" jdbcType="INTEGER"/>
+        <result property="end" column="end" jdbcType="INTEGER"/>
+        <result property="room" column="room" jdbcType="VARCHAR"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="profession" column="profession" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="getCourseInfo" resultType="com.zrh.entity.CourseInfo">
+        select
+        a.*
+        from
+        course_info a
+        left join course b
+        on a.course_id = b.id and b.is_del = 0
+        where a.is_del = 0
+        <if test="profession != null and profession != ''">
+            and a.profession = #{profession}
+        </if>
+        <if test="courseName != null and courseName != ''">
+            AND b.name = #{courseName}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,36 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - /opt/minioData:/data
+    command: server --console-address ":9001" /data
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: root
+  sms:
+    image: sms
+    ports:
+      - "80:80"
+  course-mng:
+    image: course-mng
+    ports:
+      - "8443:8443"
+    depends_on:
+      - redis
+      - minio
+      - mysql

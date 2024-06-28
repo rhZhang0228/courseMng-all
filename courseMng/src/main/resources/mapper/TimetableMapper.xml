@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zrh.mapper.TimetableMapper">
+
+    <resultMap id="BaseResultMap" type="com.zrh.entity.Timetable">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="weekId" column="week_id" jdbcType="INTEGER"/>
+        <result property="profession" column="profession" jdbcType="VARCHAR"/>
+        <result property="grade" column="grade" jdbcType="VARCHAR"/>
+        <result property="year" column="year" jdbcType="INTEGER"/>
+        <result property="term" column="term" jdbcType="TINYINT"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,week_id,profession,
+        grade,year,term,
+        is_del
+    </sql>
+</mapper>
